@@ -1,0 +1,982 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Доисторический Атлас</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600;800&family=Philosopher:ital,wght@0,700;1,700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Montserrat', sans-serif;
+            background: linear-gradient(rgba(10, 18, 30, 0.90), rgba(6, 11, 20, 0.95)), 
+                        url('https://i.pinimg.com/originals/e3/d0/f4/e3d0f482f1a489a41dffe7744d16a836.jpg') no-repeat center center fixed;
+            background-size: cover;
+            color: #f1f7f4;
+            overflow-x: hidden;
+        }
+
+        .brand-title {
+            font-family: 'Philosopher', sans-serif;
+            text-shadow: 0 4px 10px rgba(100, 149, 237, 0.3);
+        }
+
+        .custom-blur {
+            backdrop-filter: blur(12px);
+        }
+
+        #leaves-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            overflow: hidden;
+            z-index: 1;
+        }
+
+        .leaf {
+            position: absolute;
+            top: -50px;
+            pointer-events: none;
+            opacity: 0.6;
+            animation: fall linear forwards;
+        }
+
+        @keyframes fall {
+            0% {
+                transform: translateY(-50px) translateX(0) rotate(0deg);
+                opacity: 0;
+            }
+            10% { opacity: 0.6; }
+            90% { opacity: 0.6; }
+            100% {
+                transform: translateY(105vh) translateX(var(--sway-distance)) rotate(var(--rotations));
+                opacity: 0;
+            }
+        }
+
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #080f1a;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #6495ED;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #4169E1;
+        }
+    </style>
+</head>
+<body class="min-h-screen relative flex flex-col justify-between">
+
+    <div id="leaves-container"></div>
+
+    <header class="relative z-10 w-full max-w-7xl mx-auto px-4 py-6 flex flex-col md:flex-row items-center justify-between border-b border-[#6495ED]/20 custom-blur">
+        <div class="flex items-center space-x-3 mb-4 md:mb-0">
+            <svg class="w-10 h-10 text-[#6495ED] animate-pulse" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2M17.15,10.65C17.3,11.53 17,12.44 16.35,13.1C15.7,13.76 14.8,14.07 13.9,13.9C13,13.75 12.18,13.2 11.6,12.4C11,11.6 10.74,10.63 10.9,9.7C11.05,8.8 11.6,8 12.4,7.45C13.2,6.9 14.15,6.66 15.08,6.8C16,7 16.78,7.5 17.3,8.3C17.8,9.1 17.76,10 17.15,10.65M12,18H8V15H12V18M15,18H13V15H15V18M18,18H16V15H18V18Z"/>
+            </svg>
+            <div>
+                <h1 class="text-2xl md:text-3xl font-extrabold text-[#6495ED] brand-title tracking-wide">DINOSAUR WORLD</h1>
+                <p class="text-xs text-[#6495ED]/80 uppercase font-semibold tracking-widest">Интерактивный Атлас</p>
+            </div>
+        </div>
+        
+        <nav class="flex space-x-1 bg-slate-950/60 p-1.5 rounded-full border border-[#6495ED]/20">
+            <button onclick="switchTab('atlas')" id="btn-tab-atlas" class="px-5 py-2 rounded-full text-sm font-semibold transition-all duration-300 bg-[#6495ED] text-white shadow-lg">Атлас</button>
+            <button onclick="switchTab('compare')" id="btn-tab-compare" class="px-5 py-2 rounded-full text-sm font-semibold text-gray-300 hover:text-white transition-all duration-300">Сравнение</button>
+            <button onclick="switchTab('quiz')" id="btn-tab-quiz" class="px-5 py-2 rounded-full text-sm font-semibold text-gray-300 hover:text-white transition-all duration-300">Викторина</button>
+        </nav>
+    </header>
+
+    <main class="relative z-10 w-full max-w-7xl mx-auto px-4 py-8 flex-grow">
+        
+        <div id="tab-atlas" class="space-y-8 animate-fade-in">
+            
+            <div class="bg-slate-900/60 border border-[#6495ED]/20 p-5 rounded-3xl custom-blur shadow-2xl space-y-4">
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div class="relative">
+                        <input type="text" id="search-input" oninput="filterDinosaurs()" placeholder="Поиск динозавра..." 
+                               class="w-full bg-black/40 border border-[#6495ED]/40 rounded-xl px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-[#6495ED] transition-all text-sm">
+                        <span class="absolute right-3 top-3.5 text-gray-500">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+                        </span>
+                    </div>
+
+                    <div>
+                        <select id="diet-filter" onchange="filterDinosaurs()" 
+                                class="w-full bg-black/40 border border-[#6495ED]/40 rounded-xl px-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-[#6495ED] transition-all text-sm cursor-pointer">
+                            <option value="all">Все рационы питания</option>
+                            <option value="хищник">Хищники</option>
+                            <option value="травоядный">Травоядные</option>
+                            <option value="рыбоядный">Рыбоядные / Рыболовы</option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <select id="period-filter" onchange="filterDinosaurs()" 
+                                class="w-full bg-black/40 border border-[#6495ED]/40 rounded-xl px-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-[#6495ED] transition-all text-sm cursor-pointer">
+                            <option value="all">Все геологические эпохи</option>
+                            <option value="Меловой">Меловой период</option>
+                            <option value="Юрский">Юрский период</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <div id="dino-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            </div>
+        </div>
+
+        <div id="tab-compare" class="hidden space-y-8 animate-fade-in">
+            <div class="text-center space-y-2 max-w-2xl mx-auto">
+                <h2 class="text-3xl font-bold text-[#6495ED] brand-title">Столкновение Гигантов</h2>
+                <p class="text-gray-400 text-sm">Выберите двух динозавров, чтобы сравнить их размеры, повадки и гипотетический уровень силы.</p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-start">
+                
+                <div class="bg-slate-900/40 border border-[#6495ED]/20 rounded-3xl p-6 custom-blur shadow-xl space-y-6">
+                    <label class="block text-sm font-semibold text-[#6495ED] uppercase tracking-widest">Первый динозавр</label>
+                    <select id="compare-1" onchange="updateComparison()" class="w-full bg-black/60 border border-[#6495ED]/40 rounded-xl px-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-[#6495ED] cursor-pointer">
+                    </select>
+                    <div id="compare-card-1" class="space-y-4">
+                    </div>
+                </div>
+
+                <div class="bg-slate-900/40 border border-[#6495ED]/20 rounded-3xl p-6 custom-blur shadow-xl space-y-6">
+                    <label class="block text-sm font-semibold text-[#6495ED] uppercase tracking-widest">Второй динозавр</label>
+                    <select id="compare-2" onchange="updateComparison()" class="w-full bg-black/60 border border-[#6495ED]/40 rounded-xl px-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-[#6495ED] cursor-pointer">
+                    </select>
+                    <div id="compare-card-2" class="space-y-4">
+                    </div>
+                </div>
+
+            </div>
+
+            <div id="comparison-verdict" class="bg-black/60 border border-[#6495ED]/30 rounded-3xl p-6 text-center max-w-4xl mx-auto custom-blur shadow-xl">
+                <p class="text-lg font-bold text-[#6495ED] mb-2">Анализ палеонтологов</p>
+                <p id="verdict-text" class="text-gray-300 leading-relaxed text-sm">Выберите разных ящеров для проведения симуляции сравнения характеристик.</p>
+            </div>
+        </div>
+
+        <div id="tab-quiz" class="hidden space-y-8 animate-fade-in max-w-3xl mx-auto">
+            <div class="text-center space-y-2">
+                <h2 class="text-3xl font-bold text-[#6495ED] brand-title">Археологический Экзамен</h2>
+                <p class="text-gray-400 text-sm">Проверьте, насколько хорошо вы усвоили особенности жизни великих ящеров!</p>
+            </div>
+
+            <div class="bg-slate-900/50 border border-[#6495ED]/30 rounded-3xl p-8 custom-blur shadow-2xl relative overflow-hidden">
+                <div class="flex justify-between items-center mb-6">
+                    <span class="text-sm bg-[#6495ED]/20 px-3 py-1.5 rounded-full border border-[#6495ED]/40 text-[#6495ED]">
+                        Вопрос: <span id="quiz-progress" class="font-bold">1 / 5</span>
+                    </span>
+                    <span class="text-sm bg-blue-900/30 px-3 py-1.5 rounded-full border border-[#6495ED]/30 text-blue-200">
+                        Очки: <span id="quiz-score" class="font-bold">0</span>
+                    </span>
+                </div>
+
+                <div class="space-y-6">
+                    <p id="quiz-question" class="text-xl font-bold text-white leading-relaxed">Здесь будет располагаться вопрос викторины...</p>
+                    
+                    <div id="quiz-answers" class="grid grid-cols-1 gap-4">
+                    </div>
+                </div>
+
+                <div id="quiz-controls" class="mt-8 flex justify-end hidden">
+                    <button onclick="nextQuizQuestion()" class="bg-[#6495ED] hover:bg-[#4169E1] active:scale-95 text-white font-bold px-6 py-3 rounded-xl transition-all shadow-lg flex items-center space-x-2">
+                        <span>Дальше</span>
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+                    </button>
+                </div>
+
+                <div id="quiz-result-screen" class="hidden absolute inset-0 bg-black/95 flex flex-col items-center justify-center p-6 text-center space-y-6">
+                    <div class="w-16 h-16 text-[#6495ED]">
+                        <svg viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M18 2H6c-1.1 0-2 .9-2 2v1c0 1.7 1.3 3.1 3 3.3V11c0 2.2 1.8 4 4 4h2v3H9c-.6 0-1 .4-1 1v2h8v-2c0-.6-.4-1-1-1h-4v-3h2c2.2 0 4-1.8 4-4V8.3c1.7-.2 3-1.6 3-3.3V4c0-1.1-.9-2-2-2zm-1 6.3c-.6.2-1 .7-1 1.3V11c0 1.1-.9 2-2 2h-4c-1.1 0-2-.9-2-2V9.6c0-.6-.4-1.1-1-1.3C6.4 8.1 6 7.6 6 7V4h12v3c0 .6-.4 1.1-1 1.3z" />
+                        </svg>
+                    </div>
+                    <h3 class="text-2xl font-bold text-[#6495ED]">Экспедиция Завершена!</h3>
+                    <p id="quiz-result-text" class="text-gray-300 max-w-md">Вы правильно ответили на 4 из 5 вопросов.</p>
+                    <button onclick="startQuiz()" class="bg-[#6495ED] hover:bg-[#4169E1] text-white font-bold px-8 py-3 rounded-full transition-all active:scale-95 shadow-lg">
+                        Начать заново
+                    </button>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <div id="dino-modal" class="fixed inset-0 bg-black/80 z-50 flex items-center justify-center p-4 hidden transition-opacity duration-300 ease-in-out opacity-0">
+        <div class="bg-slate-900/95 border-2 border-[#6495ED]/50 w-full max-w-3xl rounded-3xl p-6 md:p-8 relative custom-blur shadow-2xl overflow-y-auto max-h-[90vh] space-y-6 scale-95 transition-transform duration-300">
+            
+            <button onclick="closeModal()" class="absolute top-4 right-4 text-gray-400 hover:text-white bg-black/40 p-2 rounded-full border border-[#6495ED]/20 transition-all hover:scale-110">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+            </button>
+
+            <div class="flex flex-col md:flex-row gap-6">
+                <div class="md:w-1/3 flex flex-col items-center justify-center bg-black/40 rounded-2xl p-4 border border-[#6495ED]/20 relative">
+                    <div id="modal-fossil" class="w-24 h-24 text-[#6495ED] filter drop-shadow-[0_10px_15px_rgba(100,149,237,0.3)] animate-pulse">
+                        <svg viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10 10-4.5 10-10S17.5 2 12 2zm1 15.5c0-.8-.7-1.5-1.5-1.5s-1.5.7-1.5 1.5.7 1.5 1.5 1.5 1.5-.7 1.5-1.5zm-1-3.5c-.6 0-1-.4-1-1V9c0-.6.4-1 1-1s1 .4 1 1v4c0 .6-.4 1-1 1z"/>
+                        </svg>
+                    </div>
+                    <span id="modal-diet-tag" class="mt-4 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wide"></span>
+                </div>
+
+                <div class="md:w-2/3 space-y-4">
+                    <div>
+                        <span id="modal-period" class="text-xs font-bold text-[#6495ED] tracking-wider uppercase">Меловой Период</span>
+                        <h2 id="modal-name" class="text-3xl font-extrabold text-white brand-title">Тираннозавр Рекс</h2>
+                    </div>
+                    <p id="modal-description" class="text-gray-300 leading-relaxed text-sm md:text-base">Здесь будет находиться полное подробное палеонтологическое описание со всеми фактами.</p>
+                    
+                    <div class="flex flex-wrap gap-2 pt-2">
+                        <button onclick="readAloud()" class="bg-[#6495ED] hover:bg-[#4169E1] text-white font-bold px-4 py-2 rounded-xl text-xs flex items-center space-x-2 transition-all active:scale-95 shadow-md">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z"></path></svg>
+                            <span>Озвучить факт</span>
+                        </button>
+                        <button onclick="triggerRoarSound()" class="bg-blue-900/60 hover:bg-blue-800/60 border border-[#6495ED]/40 text-white font-bold px-4 py-2 rounded-xl text-xs flex items-center space-x-2 transition-all active:scale-95 shadow-md">
+                            <span>Воспроизвести рык</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 bg-black/30 p-4 rounded-2xl border border-[#6495ED]/20">
+                <div class="text-center">
+                    <p class="text-xs text-gray-400 uppercase font-semibold">Длина ящера</p>
+                    <p id="modal-size" class="text-lg font-extrabold text-[#6495ED]">12 м</p>
+                </div>
+                <div class="text-center">
+                    <p class="text-xs text-gray-400 uppercase font-semibold">Средний Вес</p>
+                    <p id="modal-weight" class="text-lg font-extrabold text-[#6495ED]">8 тонн</p>
+                </div>
+                <div class="text-center">
+                    <p class="text-xs text-gray-400 uppercase font-semibold">Скор. Бега</p>
+                    <p id="modal-speed" class="text-lg font-extrabold text-[#6495ED]">27 км/ч</p>
+                </div>
+                <div class="text-center">
+                    <p class="text-xs text-gray-400 uppercase font-semibold">Опасность</p>
+                    <p id="modal-danger" class="text-lg font-extrabold text-red-400">10/10</p>
+                </div>
+            </div>
+
+            <div class="bg-slate-950/40 p-4 rounded-2xl border border-[#6495ED]/20 flex flex-col sm:flex-row items-center justify-between text-xs text-gray-300 gap-4">
+                <div class="flex items-center space-x-3">
+                    <div class="w-6 h-6 text-[#6495ED]">
+                        <svg viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-2 10h-4v4h-2v-4H7v-2h4V7h2v4h4v2z"/>
+                        </svg>
+                    </div>
+                    <div>
+                        <p class="font-bold text-white text-sm">Палеонтологический макет масштаба</p>
+                        <p class="text-gray-400">Этот динозавр сопоставим в размерах со следующим объектом:</p>
+                    </div>
+                </div>
+                <span id="modal-scale-compare" class="bg-slate-900/60 border border-[#6495ED]/30 px-3 py-1 rounded-full text-[#6495ED] font-bold uppercase tracking-wider">
+                    с 3-этажный дом
+                </span>
+            </div>
+
+        </div>
+    </div>
+
+    <footer class="relative z-10 w-full text-center py-6 border-t border-[#6495ED]/20 custom-blur mt-8 text-xs text-[#6495ED]/60">
+        <p>© 2026 DINOSAUR WORLD EXPEDITION • Исследуйте древние тайны нашей планеты.</p>
+    </footer>
+
+    <script>
+        const dinosaurs = [
+            {
+                id: 'trex',
+                name: "Тираннозавр Рекс",
+                diet: "хищник",
+                period: "Меловой",
+                size: "12.3 м",
+                weight: "8.5 тонн",
+                speed: "27 км/ч",
+                danger: "10/10",
+                scaleCompare: "с 3-этажный дом",
+                fact: "Царь хищников! Сила его укуса была настолько мощной, что он мог легко раздробить кости крупной добычи, а один его зубик был размером с целый банан.",
+                question: "Какой динозавр обладал силой укуса, способной раздробить кости крупной добычи, и зубами размером с банан?",
+                soundPitch: 0.4
+            },
+            {
+                id: 'tricera',
+                name: "Трицератопс",
+                diet: "травоядный",
+                period: "Меловой",
+                size: "9.0 м",
+                weight: "12 тонн",
+                speed: "32 км/ч",
+                danger: "7/10",
+                scaleCompare: "с тяжелый грузовик",
+                fact: "Трехрогий вегетарианец. Его огромный костяной воротник не только защищал шею от зубов Т-Рекса, но и работал как радиатор, помогая охлаждаться в жару.",
+                question: "У какого динозавра костяной воротник защищал шею от зубов хищников и выполнял роль теплового радиатора?",
+                soundPitch: 0.7
+            },
+            {
+                id: 'ptero',
+                name: "Птеранодон",
+                diet: "рыбоядный",
+                period: "Меловой",
+                size: "6.2 м (размах)",
+                weight: "25 кг",
+                speed: "60 км/ч",
+                danger: "3/10",
+                scaleCompare: "с крупного орла",
+                fact: "Летающий щеголь мезозоя. На самом деле это птерозавр (летающая рептилия), а не динозавр. Младшие виды были размером с воробья, а старшие — с хороший планер.",
+                question: "Какая летающая рептилия мезозоя ошибочно принимается за динозавра, а ее крупные виды сопоставимы по размеру с планером?",
+                soundPitch: 1.5
+            },
+            {
+                id: 'brachio',
+                name: "Брахиозавр",
+                diet: "травоядный",
+                period: "Юрский",
+                size: "26.0 м",
+                weight: "56 тонн",
+                speed: "15 км/ч",
+                danger: "5/10",
+                scaleCompare: "с 5-этажный дом",
+                fact: "Жираф мезозоя весом с десяток слонов! Его шея была настолько длинной, что этот гигант мог бы без труда заглянуть в окно 4-го этажа современной многоэтажки.",
+                question: "Какой травоядный ящер весил как десяток слонов и обладал шеей, способной дотянуться до четвертого этажа?",
+                soundPitch: 0.3
+            },
+            {
+                id: 'raptor',
+                name: "Велоцираптор",
+                diet: "хищник",
+                period: "Меловой",
+                size: "2.0 м",
+                weight: "15 кг",
+                speed: "40 км/ч",
+                danger: "8/10",
+                scaleCompare: "с крупную индейку",
+                fact: "Мал, да удал! В жизни они были размером с крупную индейку и покрыты перьями (совсем не как в кино), но охотились невероятно хитрыми и быстрыми стаями.",
+                question: "Какой небольшой хищник юрского и мелового периодов был покрыт перьями и охотился быстрыми, хитрыми стаями?",
+                soundPitch: 1.8
+            },
+            {
+                id: 'stego',
+                name: "Стегозавр",
+                diet: "травоядный",
+                period: "Юрский",
+                size: "9.0 м",
+                weight: "5.5 тонн",
+                speed: "10 км/ч",
+                danger: "6/10",
+                scaleCompare: "с городской автобус",
+                fact: "Обладатель грозных шипов на хвосте и огромных пластин на спине. При этом мозг этого бедняги весил всего 70 грамм и был размером с обычный грецкий орех.",
+                question: "У какого защищенного пластинами динозавра мозг весил всего 70 граммов и был размером с грецкий орех?",
+                soundPitch: 0.6
+            },
+            {
+                id: 'ankylo',
+                name: "Анкилозавр",
+                diet: "травоядный",
+                period: "Меловой",
+                size: "8.0 м",
+                weight: "6.0 тонн",
+                speed: "15 км/ч",
+                danger: "7/10",
+                scaleCompare: "со средний танк",
+                fact: "Живой доисторический танк. Его спину покрывала непробиваемая костяная броня, а на хвосте красовалась тяжеленная булава, которой он лихо ломал ноги нападавшим хищникам.",
+                question: "Какой защищенный броней ящер использовал тяжелую костяную булаву на хвосте для борьбы с хищниками?",
+                soundPitch: 0.5
+            },
+            {
+                id: 'spino',
+                name: "Спинозавр",
+                diet: "хищник",
+                period: "Меловой",
+                size: "15.0 м",
+                weight: "10 тонн",
+                speed: "25 км/ч",
+                danger: "10/10",
+                scaleCompare: "с большой яхтой",
+                fact: "Крупнейший хищник в истории планеты! Он превосходил размерами даже знаменитого Т-Рекса, потрясающе плавал и охотился на гигантских рыб благодаря вытянутой челюсти и огромному костяному «парусу» на спине.",
+                question: "Какой гигантский хищник превосходил по длине Т-Рекса, умел плавать и обладал большим кожистым «парусом» на спине?",
+                soundPitch: 0.35
+            },
+            {
+                id: 'diplo',
+                name: "Диплодок",
+                diet: "травоядный",
+                period: "Юрский",
+                size: "27.0 м",
+                weight: "15 тонн",
+                speed: "20 км/ч",
+                danger: "5/10",
+                scaleCompare: "с пассажирский вагон",
+                fact: "Обладатель невероятно длинного и тонкого хвоста. Ученые считают, что этот гигант мог использовать кончик хвоста как кнут, щелкая им со скоростью звука для отпугивания хищников.",
+                question: "Какой длиннохвостый гигант мог щелкать кончиком своего хвоста со скоростью звука для защиты от врагов?",
+                soundPitch: 0.4
+            },
+            {
+                id: 'parasaur',
+                name: "Паразауролоф",
+                diet: "травоядный",
+                period: "Меловой",
+                size: "10.0 м",
+                weight: "3.5 тонн",
+                speed: "35 км/ч",
+                danger: "2/10",
+                scaleCompare: "со свадебный лимузин",
+                fact: "Самый музыкальный динозавр. Его длинный загнутый гребень на голове работал как духовая труба. Прогоняя сквозь него воздух, он мог издавать мощный рев для общения со своей стаей.",
+                question: "У какого динозавра длинный загнутый гребень на голове работал по принципу музыкальной трубы для подачи сигналов?",
+                soundPitch: 0.8
+            },
+            {
+                id: 'dilopho',
+                name: "Дилофозавр",
+                diet: "хищник",
+                period: "Юрский",
+                size: "6.0 м",
+                weight: "400 кг",
+                speed: "38 км/ч",
+                danger: "7/10",
+                scaleCompare: "со спортивный внедорожник",
+                fact: "Быстрый хищник с двумя округлыми гребнями на голове. Вопреки фильмам, он не умел плеваться ядом и не раскрывал воротник, зато бегал с огромной скоростью и ловко выслеживал добычу.",
+                question: "У какого хищника с двумя округлыми гребнями на голове в реальности отсутствовала способность плеваться ядом?",
+                soundPitch: 1.1
+            },
+            {
+                id: 'allosaur',
+                name: "Аллозавр",
+                diet: "хищник",
+                period: "Юрский",
+                size: "9.7 м",
+                weight: "2.3 тонны",
+                speed: "35 км/ч",
+                danger: "9/10",
+                scaleCompare: "со школьный автобус",
+                fact: "Главный охотник юрского периода. Его челюсти работали как топор: он широко раскрывал пасть и наносил удары сверху вниз. Действовал сообща и мог одолеть даже огромных диплодоков.",
+                question: "Какой хищник юрского периода охотился группами и наносил удары верхней челюстью сверху вниз, словно топором?",
+                soundPitch: 0.45
+            }
+        ];
+
+        let activeTab = 'atlas';
+        let currentSelectedDino = null;
+
+        function switchTab(tabId) {
+            activeTab = tabId;
+            const tabs = ['atlas', 'compare', 'quiz'];
+            
+            tabs.forEach(t => {
+                const tabEl = document.getElementById(`tab-${t}`);
+                const btnEl = document.getElementById(`btn-tab-${t}`);
+                if (t === tabId) {
+                    tabEl.classList.remove('hidden');
+                    btnEl.classList.add('bg-[#6495ED]', 'text-white', 'shadow-lg');
+                    btnEl.classList.remove('text-gray-300', 'hover:text-white');
+                } else {
+                    tabEl.classList.add('hidden');
+                    btnEl.classList.remove('bg-[#6495ED]', 'text-white', 'shadow-lg');
+                    btnEl.classList.add('text-gray-300', 'hover:text-white');
+                }
+            });
+
+            if (tabId === 'compare') {
+                initComparisonOptions();
+            } else if (tabId === 'quiz') {
+                startQuiz();
+            }
+        }
+
+        function renderAtlas() {
+            const grid = document.getElementById('dino-grid');
+            grid.innerHTML = '';
+
+            dinosaurs.forEach(dino => {
+                let dietBadgeColor = "bg-red-950/70 text-red-400 border-red-800/50";
+                if (dino.diet === 'травоядный') dietBadgeColor = "bg-slate-900/70 text-slate-300 border-slate-700/50";
+                if (dino.diet === 'рыбоядный') dietBadgeColor = "bg-blue-950/70 text-blue-400 border-blue-800/50";
+
+                const cardHtml = `
+                    <div class="group relative bg-slate-900/20 border border-[#6495ED]/20 hover:border-[#6495ED] rounded-3xl p-5 custom-blur transition-all duration-300 hover:-translate-y-2 hover:shadow-[0_10px_30px_rgba(100,149,237,0.15)] flex flex-col justify-between cursor-pointer" onclick="openModal('${dino.id}')">
+                        <div>
+                            <div class="w-full h-32 bg-black/40 rounded-2xl flex items-center justify-center relative overflow-hidden mb-4 group-hover:scale-105 transition-all duration-300">
+                                <div class="w-16 h-16 text-[#6495ED] opacity-80 group-hover:rotate-12 transition-transform duration-300">
+                                    <svg viewBox="0 0 24 24" fill="currentColor">
+                                        <path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10 10-4.5 10-10S17.5 2 12 2zm1 15.5c0-.8-.7-1.5-1.5-1.5s-1.5.7-1.5 1.5.7 1.5 1.5 1.5 1.5-.7 1.5-1.5zm-1-3.5c-.6 0-1-.4-1-1V9c0-.6.4-1 1-1s1 .4 1 1v4c0 .6-.4 1-1 1z"/>
+                                    </svg>
+                                </div>
+                                <span class="absolute top-2 right-2 text-[10px] uppercase font-bold text-gray-400/80 bg-black/60 px-2 py-0.5 rounded-full border border-[#6495ED]/20">${dino.period}</span>
+                            </div>
+
+                            <h3 class="text-xl font-extrabold text-white tracking-wide group-hover:text-[#6495ED] transition-colors mb-1">${dino.name}</h3>
+                            <div class="flex flex-wrap gap-1 mb-3">
+                                <span class="px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider border ${dietBadgeColor}">${dino.diet}</span>
+                            </div>
+                            
+                            <p class="text-xs text-gray-400 line-clamp-3 leading-relaxed mb-4">${dino.fact}</p>
+                        </div>
+
+                        <div class="pt-3 border-t border-slate-950 flex items-center justify-between text-xs">
+                            <span class="text-gray-400">Опасность: <span class="text-red-400 font-bold">${dino.danger}</span></span>
+                            <span class="text-[#6495ED] font-semibold group-hover:underline flex items-center space-x-1">
+                                <span>Исследовать</span> 
+                                <svg class="w-3 h-3 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+                            </span>
+                        </div>
+                    </div>
+                `;
+                grid.insertAdjacentHTML('beforeend', cardHtml);
+            });
+        }
+
+        function filterDinosaurs() {
+            const searchValue = document.getElementById('search-input').value.toLowerCase();
+            const dietValue = document.getElementById('diet-filter').value;
+            const periodValue = document.getElementById('period-filter').value;
+
+            const cards = document.querySelectorAll('#dino-grid > div');
+            
+            dinosaurs.forEach((dino, idx) => {
+                const matchesSearch = dino.name.toLowerCase().includes(searchValue) || dino.fact.toLowerCase().includes(searchValue);
+                const matchesDiet = dietValue === 'all' || dino.diet === dietValue;
+                const matchesPeriod = periodValue === 'all' || dino.period === periodValue;
+
+                if (matchesSearch && matchesDiet && matchesPeriod) {
+                    cards[idx].classList.remove('hidden');
+                } else {
+                    cards[idx].classList.add('hidden');
+                }
+            });
+        }
+
+        function openModal(dinoId) {
+            const dino = dinosaurs.find(d => d.id === dinoId);
+            if (!dino) return;
+            currentSelectedDino = dino;
+
+            document.getElementById('modal-name').textContent = dino.name;
+            document.getElementById('modal-period').textContent = `${dino.period} Геологический период`;
+            document.getElementById('modal-description').textContent = dino.fact;
+            document.getElementById('modal-size').textContent = dino.size;
+            document.getElementById('modal-weight').textContent = dino.weight;
+            document.getElementById('modal-speed').textContent = dino.speed;
+            document.getElementById('modal-danger').textContent = `${dino.danger}`;
+            document.getElementById('modal-scale-compare').textContent = dino.scaleCompare;
+
+            const dietTag = document.getElementById('modal-diet-tag');
+            dietTag.textContent = dino.diet;
+            dietTag.className = "mt-4 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wide border";
+            if (dino.diet === 'хищник') {
+                dietTag.classList.add('bg-red-950/70', 'text-red-400', 'border-red-800/50');
+            } else if (dino.diet === 'травоядный') {
+                dietTag.classList.add('bg-slate-900/70', 'text-slate-300', 'border-slate-700/50');
+            } else {
+                dietTag.classList.add('bg-blue-950/70', 'text-blue-400', 'border-blue-800/50');
+            }
+
+            const modal = document.getElementById('dino-modal');
+            modal.classList.remove('hidden');
+            setTimeout(() => {
+                modal.classList.remove('opacity-0');
+                modal.querySelector('.bg-slate-900\\/95').classList.remove('scale-95');
+            }, 10);
+        }
+
+        function closeModal() {
+            const modal = document.getElementById('dino-modal');
+            modal.classList.add('opacity-0');
+            modal.querySelector('.bg-slate-900\\/95').classList.add('scale-95');
+            setTimeout(() => {
+                modal.classList.add('hidden');
+            }, 300);
+
+            if ('speechSynthesis' in window) {
+                window.speechSynthesis.cancel();
+            }
+        }
+
+        function readAloud() {
+            if (!currentSelectedDino) return;
+            if ('speechSynthesis' in window) {
+                window.speechSynthesis.cancel();
+
+                const textToRead = `${currentSelectedDino.name}. ${currentSelectedDino.fact}`;
+                const utterance = new SpeechSynthesisUtterance(textToRead);
+                utterance.lang = 'ru-RU';
+                
+                const voices = window.speechSynthesis.getVoices();
+                const russianVoice = voices.find(voice => voice.lang.includes('ru'));
+                if (russianVoice) {
+                    utterance.voice = russianVoice;
+                }
+                
+                window.speechSynthesis.speak(utterance);
+            } else {
+                showToast("Ваш браузер не поддерживает синтез речи.");
+            }
+        }
+
+        function triggerRoarSound() {
+            if (!currentSelectedDino) return;
+
+            try {
+                const AudioContext = window.AudioContext || window.webkitAudioContext;
+                if (!AudioContext) return;
+                
+                const ctx = new AudioContext();
+                
+                const baseFreq = 50 + (100 * (1 - (currentSelectedDino.soundPitch || 1)));
+
+                const osc = ctx.createOscillator();
+                osc.type = 'sawtooth';
+                osc.frequency.setValueAtTime(baseFreq, ctx.currentTime);
+                osc.frequency.linearRampToValueAtTime(baseFreq / 2, ctx.currentTime + 1.2);
+
+                const lfo = ctx.createOscillator();
+                lfo.frequency.setValueAtTime(15, ctx.currentTime);
+                const lfoGain = ctx.createGain();
+                lfoGain.gain.setValueAtTime(30, ctx.currentTime);
+
+                const distortion = ctx.createWaveShaper();
+                function makeDistortionCurve(amount) {
+                    const k = typeof amount === 'number' ? amount : 50;
+                    const n_samples = 44100;
+                    const curve = new Float32Array(n_samples);
+                    const deg = Math.PI / 180;
+                    for (let i = 0 ; i < n_samples; ++i ) {
+                        const x = (i * 2) / n_samples - 1;
+                        curve[i] = (3 + k) * x * 20 * deg / (Math.PI + k * Math.abs(x));
+                    }
+                    return curve;
+                }
+                distortion.curve = makeDistortionCurve(100);
+                distortion.oversample = '4x';
+
+                const filter = ctx.createBiquadFilter();
+                filter.type = 'lowpass';
+                filter.frequency.setValueAtTime(300, ctx.currentTime);
+                filter.frequency.linearRampToValueAtTime(120, ctx.currentTime + 1.2);
+
+                const gainNode = ctx.createGain();
+                gainNode.gain.setValueAtTime(0.01, ctx.currentTime);
+                gainNode.gain.linearRampToValueAtTime(0.7, ctx.currentTime + 0.1);
+                gainNode.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 1.5);
+
+                lfo.connect(lfoGain);
+                lfoGain.connect(osc.frequency);
+                
+                osc.connect(distortion);
+                distortion.connect(filter);
+                filter.connect(gainNode);
+                gainNode.connect(ctx.destination);
+
+                lfo.start();
+                osc.start();
+                
+                lfo.stop(ctx.currentTime + 1.6);
+                osc.stop(ctx.currentTime + 1.6);
+
+            } catch (err) {
+                console.warn("Аудио не поддерживается браузером", err);
+            }
+        }
+
+        function initComparisonOptions() {
+            const select1 = document.getElementById('compare-1');
+            const select2 = document.getElementById('compare-2');
+
+            select1.innerHTML = '';
+            select2.innerHTML = '';
+
+            dinosaurs.forEach((dino, idx) => {
+                const opt1 = document.createElement('option');
+                opt1.value = dino.id;
+                opt1.textContent = dino.name;
+                select1.appendChild(opt1);
+
+                const opt2 = document.createElement('option');
+                opt2.value = dino.id;
+                opt2.textContent = dino.name;
+                if (idx === 1) opt2.selected = true;
+                select2.appendChild(opt2);
+            });
+
+            updateComparison();
+        }
+
+        function updateComparison() {
+            const id1 = document.getElementById('compare-1').value;
+            const id2 = document.getElementById('compare-2').value;
+
+            const dino1 = dinosaurs.find(d => d.id === id1);
+            const dino2 = dinosaurs.find(d => d.id === id2);
+
+            if (!dino1 || !dino2) return;
+
+            document.getElementById('compare-card-1').innerHTML = generateCompareCardContent(dino1);
+            document.getElementById('compare-card-2').innerHTML = generateCompareCardContent(dino2);
+
+            let verdict = "";
+            const danger1 = parseInt(dino1.danger);
+            const danger2 = parseInt(dino2.danger);
+
+            if (id1 === id2) {
+                verdict = `Вы сравниваете одинаковых особей вида <strong>${dino1.name}</strong>. В поединке за территорию они будут использовать демонстративные угрозы, а в крайнем случае сойдутся в жестком и равном бою.`;
+            } else if (dino1.diet === 'хищник' && dino2.diet === 'травоядный') {
+                verdict = `<strong>Хищник против гиганта!</strong> В дикой природе Мезозоя <strong>${dino1.name}</strong> определенно рассматривал бы <strong>${dino2.name}</strong> в качестве добычи. Однако пробить броню или выдержать защитные удары (весом ${dino2.weight}) для охотника будет смертельно опасной задачей.`;
+            } else if (dino1.diet === 'травоядный' && dino2.diet === 'хищник') {
+                verdict = `<strong>Оборона против нападения!</strong> Великан <strong>${dino1.name}</strong> обладает внушительным защитным арсеналом. Хищному <strong>${dino2.name}</strong> придется задействовать предельную ловкость своего тела и скорость (${dino2.speed}), чтобы совершить успешную атаку, не попав под сокрушительный ответ.`;
+            } else if (dino1.diet === 'хищник' && dino2.diet === 'хищник') {
+                verdict = `<strong>Борьба за вершину пищевой цепочки!</strong> Встреча двух безжалостных плотоядных — <strong>${dino1.name}</strong> и <strong>${dino2.name}</strong> — привела бы к масштабной территориальной схватке. Скорее всего, победитель определился бы силой укуса и массой тела, где преимущество на стороне более тяжелого ящера.`;
+            } else {
+                verdict = `Оба представителя являются относительно мирными видами. Скорее всего, они просто мирно разминутся в древнем подлеске, если только <strong>${dino1.name}</strong> случайно не наступит на защитное гнездо оппонента.`;
+            }
+
+            document.getElementById('verdict-text').innerHTML = verdict;
+        }
+
+        function generateCompareCardContent(dino) {
+            let dietColor = dino.diet === 'хищник' ? 'text-red-400' : 'text-[#6495ED]';
+            return `
+                <div class="space-y-4 pt-4 border-t border-slate-950">
+                    <div class="flex items-center space-x-4">
+                        <div class="w-16 h-16 text-[#6495ED]">
+                            <svg viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10 10-4.5 10-10S17.5 2 12 2zm1 15.5c0-.8-.7-1.5-1.5-1.5s-1.5.7-1.5 1.5.7 1.5 1.5 1.5 1.5-.7 1.5-1.5zm-1-3.5c-.6 0-1-.4-1-1V9c0-.6.4-1 1-1s1 .4 1 1v4c0 .6-.4 1-1 1z"/>
+                            </svg>
+                        </div>
+                        <div>
+                            <h4 class="text-xl font-bold text-white">${dino.name}</h4>
+                            <p class="text-xs text-[#6495ED] font-semibold tracking-wider uppercase">${dino.period} Период</p>
+                        </div>
+                    </div>
+                    
+                    <p class="text-xs text-gray-400 leading-relaxed">${dino.fact}</p>
+
+                    <div class="space-y-2">
+                        <div class="flex justify-between text-xs py-1 border-b border-slate-950/40">
+                            <span class="text-gray-400">Тип питания:</span>
+                            <span class="font-bold uppercase ${dietColor}">${dino.diet}</span>
+                        </div>
+                        <div class="flex justify-between text-xs py-1 border-b border-slate-950/40">
+                            <span class="text-gray-400">Габариты (длина/размах):</span>
+                            <span class="text-white font-bold">${dino.size}</span>
+                        </div>
+                        <div class="flex justify-between text-xs py-1 border-b border-slate-950/40">
+                            <span class="text-gray-400">Средняя масса:</span>
+                            <span class="text-white font-bold">${dino.weight}</span>
+                        </div>
+                        <div class="flex justify-between text-xs py-1 border-b border-slate-950/40">
+                            <span class="text-gray-400">Предельная скорость:</span>
+                            <span class="text-white font-bold">${dino.speed}</span>
+                        </div>
+                        <div class="flex justify-between text-xs py-1 border-b border-slate-950/40">
+                            <span class="text-gray-400">Уровень опасности:</span>
+                            <span class="text-red-400 font-bold">${dino.danger}</span>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        let quizQuestions = [];
+        let currentQuestionIdx = 0;
+        let score = 0;
+
+        function buildQuiz() {
+            quizQuestions = [];
+            const shuffledDinos = [...dinosaurs].sort(() => 0.5 - Math.random());
+            
+            for (let i = 0; i < 5; i++) {
+                const targetDino = shuffledDinos[i];
+                const options = [targetDino.name];
+                while (options.length < 4) {
+                    const randomDino = dinosaurs[Math.floor(Math.random() * dinosaurs.length)];
+                    if (!options.includes(randomDino.name)) {
+                        options.push(randomDino.name);
+                    }
+                }
+                
+                options.sort(() => 0.5 - Math.random());
+
+                quizQuestions.push({
+                    question: targetDino.question,
+                    answer: targetDino.name,
+                    options: options
+                });
+            }
+        }
+
+        function startQuiz() {
+            score = 0;
+            currentQuestionIdx = 0;
+            buildQuiz();
+            
+            document.getElementById('quiz-result-screen').classList.add('hidden');
+            showQuestion();
+        }
+
+        function showQuestion() {
+            document.getElementById('quiz-controls').classList.add('hidden');
+            
+            const q = quizQuestions[currentQuestionIdx];
+            document.getElementById('quiz-progress').textContent = `${currentQuestionIdx + 1} / 5`;
+            document.getElementById('quiz-score').textContent = score;
+            document.getElementById('quiz-question').textContent = q.question;
+
+            const answersContainer = document.getElementById('quiz-answers');
+            answersContainer.innerHTML = '';
+
+            q.options.forEach(option => {
+                const btn = document.createElement('button');
+                btn.className = "w-full text-left bg-black/40 hover:bg-slate-950/40 border border-[#6495ED]/30 hover:border-[#6495ED] p-4 rounded-xl font-semibold transition-all duration-200 active:scale-98 flex items-center justify-between";
+                btn.innerHTML = `
+                    <span>${option}</span>
+                    <span class="icon-indicator hidden"></span>
+                `;
+                btn.onclick = () => selectAnswer(btn, option, q.answer);
+                answersContainer.appendChild(btn);
+            });
+        }
+
+        function selectAnswer(buttonEl, selectedVal, correctVal) {
+            const allButtons = document.querySelectorAll('#quiz-answers > button');
+            
+            allButtons.forEach(btn => {
+                btn.disabled = true;
+                btn.classList.add('opacity-60');
+            });
+            buttonEl.classList.remove('opacity-60');
+
+            if (selectedVal === correctVal) {
+                buttonEl.classList.add('bg-slate-900/80', 'border-[#6495ED]', 'text-[#6495ED]');
+                buttonEl.querySelector('.icon-indicator').innerHTML = `
+                    <svg class="w-5 h-5 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                    </svg>
+                `;
+                buttonEl.querySelector('.icon-indicator').classList.remove('hidden');
+                score += 20;
+                document.getElementById('quiz-score').textContent = score;
+            } else {
+                buttonEl.classList.add('bg-red-950/80', 'border-red-500', 'text-red-300');
+                buttonEl.querySelector('.icon-indicator').innerHTML = `
+                    <svg class="w-5 h-5 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                    </svg>
+                `;
+                buttonEl.querySelector('.icon-indicator').classList.remove('hidden');
+
+                allButtons.forEach(btn => {
+                    if (btn.textContent.trim().includes(correctVal)) {
+                        btn.classList.remove('opacity-60');
+                        btn.classList.add('bg-slate-900/50', 'border-[#6495ED]', 'text-[#6495ED]');
+                    }
+                });
+            }
+
+            document.getElementById('quiz-controls').classList.remove('hidden');
+        }
+
+        function nextQuizQuestion() {
+            currentQuestionIdx++;
+            if (currentQuestionIdx < 5) {
+                showQuestion();
+            } else {
+                showQuizResult();
+            }
+        }
+
+        function showQuizResult() {
+            const screen = document.getElementById('quiz-result-screen');
+            const resultText = document.getElementById('quiz-result-text');
+            
+            let verdict = "";
+            if (score === 100) {
+                verdict = "Невероятно! Вы заслужили звание Великого Палеонтолога мезозойской эры. Вы ответили на все вопросы без единой ошибки!";
+            } else if (score >= 60) {
+                verdict = `Достойный результат палеонтолога-исследователя! Вы набрали ${score} очков. Прочитайте атлас внимательнее, чтобы достичь максимума.`;
+            } else {
+                verdict = `Вы набрали всего ${score} очков. Попробуйте еще раз полистать карточки экспедиции, у динозавров есть масса секретов!`;
+            }
+
+            resultText.textContent = verdict;
+            screen.classList.remove('hidden');
+        }
+
+        function showToast(msg) {
+            const toast = document.createElement('div');
+            toast.className = "fixed bottom-5 right-5 z-50 bg-[#6495ED] text-white px-6 py-3 rounded-xl font-bold shadow-2xl transition-all duration-300 translate-y-20 opacity-0";
+            toast.textContent = msg;
+            document.body.appendChild(toast);
+            
+            setTimeout(() => {
+                toast.classList.remove('translate-y-20', 'opacity-0');
+            }, 10);
+
+            setTimeout(() => {
+                toast.classList.add('translate-y-20', 'opacity-0');
+                setTimeout(() => toast.remove(), 300);
+            }, 3000);
+        }
+
+        const leafPaths = [
+            "M17,8C8,10 5.9,16.17 3.82,21.34L5.71,22L6.66,19.7C12,19.7 18,12 17,8Z",
+            "M2,21A2,2 0 0,1 2,19C2,10 8,4 16,4C16,4 16.5,7.5 12.5,11.5C8.5,15.5 2,21 2,21Z",
+            "M12,2C11.5,2 10.8,4.5 9.5,7.5C8.2,10.5 5,12 5,12C5,12 8.2,13.5 9.5,16.5C10.8,19.5 11.5,22 12,22C12.5,22 13.2,19.5 14.5,16.5C15.8,13.5 19,12 19,12C19,12 15.8,10.5 14.5,7.5C13.2,4.5 12.5,2 12,2Z"
+        ];
+
+        function createLeaf() {
+            const container = document.getElementById('leaves-container');
+            if (!container) return;
+
+            const leaf = document.createElement('div');
+            leaf.classList.add('leaf');
+
+            const randomPath = leafPaths[Math.floor(Math.random() * leafPaths.length)];
+            
+            leaf.innerHTML = `
+                <svg viewBox="0 0 24 24" style="width: 100%; height: 100%;">
+                    <path d="${randomPath}" />
+                </svg>
+            `;
+
+            const size = Math.random() * 25 + 15;
+            const startX = Math.random() * 100;
+            const duration = Math.random() * 8 + 6;
+            const swayDistance = (Math.random() * 160 - 80) + 'px';
+            const rotations = (Math.random() * 720 - 360) + 'deg';
+            
+            const opacity = Math.random() * 0.30 + 0.10;
+            const leafColor = `rgba(100, 149, 237, ${opacity})`;
+
+            leaf.style.width = `${size}px`;
+            leaf.style.height = `${size}px`;
+            leaf.style.left = `${startX}vw`;
+            leaf.style.fill = leafColor;
+            leaf.style.animationDuration = `${duration}s`;
+            leaf.style.setProperty('--sway-distance', swayDistance);
+            leaf.style.setProperty('--rotations', rotations);
+
+            container.appendChild(leaf);
+
+            setTimeout(() => {
+                leaf.remove();
+            }, duration * 1000);
+        }
+
+        window.addEventListener('DOMContentLoaded', () => {
+            renderAtlas();
+            
+            setInterval(createLeaf, 600);
+            for (let i = 0; i < 15; i++) {
+                setTimeout(createLeaf, Math.random() * 4000);
+            }
+        });
+    </script>
+</body>
+</html>
