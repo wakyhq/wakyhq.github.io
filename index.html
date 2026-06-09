@@ -70,6 +70,163 @@
         ::-webkit-scrollbar-thumb:hover {
             background: #4169E1;
         }
+
+        .dino-card-image {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            border-radius: 16px;
+            transition: transform 0.3s ease;
+        }
+
+        .group:hover .dino-card-image {
+            transform: scale(1.05);
+        }
+
+        .modal-dino-image {
+            width: 100%;
+            height: 250px;
+            object-fit: cover;
+            border-radius: 20px;
+            box-shadow: 0 8px 25px rgba(100, 149, 237, 0.2);
+        }
+
+        .slider-container {
+            position: relative;
+            width: 100%;
+            height: 500px;
+            overflow: hidden;
+            border-radius: 24px;
+            box-shadow: 0 20px 60px rgba(100, 149, 237, 0.2);
+        }
+
+        .slider-track {
+            display: flex;
+            transition: transform 0.7s cubic-bezier(0.4, 0, 0.2, 1);
+            height: 100%;
+        }
+
+        .slider-slide {
+            min-width: 100%;
+            height: 100%;
+            position: relative;
+        }
+
+        .slider-slide img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .slider-slide::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 50%;
+            background: linear-gradient(to top, rgba(0,0,0,0.8), transparent);
+            pointer-events: none;
+        }
+
+        .slider-overlay {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            padding: 40px;
+            color: white;
+            z-index: 2;
+        }
+
+        .slider-overlay h2 {
+            font-family: 'Philosopher', sans-serif;
+            font-size: 2.5rem;
+            font-weight: 700;
+            text-shadow: 2px 2px 8px rgba(0,0,0,0.7);
+            margin-bottom: 8px;
+        }
+
+        .slider-overlay p {
+            font-size: 1rem;
+            text-shadow: 1px 1px 4px rgba(0,0,0,0.8);
+            opacity: 0.9;
+        }
+
+        .slider-btn {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            z-index: 10;
+            background: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(10px);
+            border: 2px solid rgba(100, 149, 237, 0.5);
+            color: white;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+        }
+
+        .slider-btn:hover {
+            background: rgba(100, 149, 237, 0.4);
+            border-color: rgba(100, 149, 237, 0.9);
+            transform: translateY(-50%) scale(1.1);
+        }
+
+        .slider-btn.prev {
+            left: 20px;
+        }
+
+        .slider-btn.next {
+            right: 20px;
+        }
+
+        .slider-dots {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 12px;
+            z-index: 10;
+        }
+
+        .slider-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.4);
+            border: 2px solid rgba(100, 149, 237, 0.5);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .slider-dot.active {
+            background: #6495ED;
+            border-color: #6495ED;
+            box-shadow: 0 0 15px rgba(100, 149, 237, 0.8);
+        }
+
+        @keyframes slideInFromRight {
+            from {
+                opacity: 0;
+                transform: translateX(50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .slider-overlay.active {
+            animation: slideInFromRight 0.6s ease-out;
+        }
     </style>
 </head>
 <body class="min-h-screen relative flex flex-col justify-between">
@@ -78,9 +235,9 @@
 
     <header class="relative z-10 w-full max-w-7xl mx-auto px-4 py-6 flex flex-col md:flex-row items-center justify-between border-b border-[#6495ED]/20 custom-blur">
         <div class="flex items-center space-x-3 mb-4 md:mb-0">
-            <svg class="w-10 h-10 text-[#6495ED] animate-pulse" viewBox="0 0 24 24" fill="currentColor">
-                <path d="M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2M17.15,10.65C17.3,11.53 17,12.44 16.35,13.1C15.7,13.76 14.8,14.07 13.9,13.9C13,13.75 12.18,13.2 11.6,12.4C11,11.6 10.74,10.63 10.9,9.7C11.05,8.8 11.6,8 12.4,7.45C13.2,6.9 14.15,6.66 15.08,6.8C16,7 16.78,7.5 17.3,8.3C17.8,9.1 17.76,10 17.15,10.65M12,18H8V15H12V18M15,18H13V15H15V18M18,18H16V15H18V18Z"/>
-            </svg>
+            <img src="https://images.unsplash.com/photo-1618172193763-c511deb635ca?w=60&h=60&fit=crop&crop=center" 
+                 alt="Dinosaur Logo" 
+                 class="w-10 h-10 rounded-full border-2 border-[#6495ED] animate-pulse object-cover">
             <div>
                 <h1 class="text-2xl md:text-3xl font-extrabold text-[#6495ED] brand-title tracking-wide">DINOSAUR WORLD</h1>
                 <p class="text-xs text-[#6495ED]/80 uppercase font-semibold tracking-widest">Интерактивный Атлас</p>
@@ -93,6 +250,76 @@
             <button onclick="switchTab('quiz')" id="btn-tab-quiz" class="px-5 py-2 rounded-full text-sm font-semibold text-gray-300 hover:text-white transition-all duration-300">Викторина</button>
         </nav>
     </header>
+
+    <!-- Слайдер -->
+    <div class="relative z-10 w-full max-w-7xl mx-auto px-4 mt-6">
+        <div class="slider-container">
+            <div class="slider-track" id="slider-track">
+                <div class="slider-slide">
+                    <img src="images/TREX.jpg" alt="Тираннозавр Рекс" onerror="this.src='https://images.unsplash.com/photo-1525877449860-ca3a5a8a3dd7?w=1200&h=600&fit=crop'">
+                    <div class="slider-overlay">
+                        <h2>Тираннозавр Рекс</h2>
+                        <p>Царь хищников мелового периода • 12.3 метра чистой мощи</p>
+                    </div>
+                </div>
+                <div class="slider-slide">
+                    <img src="images/Spino.jpg" alt="Спинозавр" onerror="this.src='https://images.unsplash.com/photo-1618331835717-801e976710b2?w=1200&h=600&fit=crop'">
+                    <div class="slider-overlay">
+                        <h2>Спинозавр</h2>
+                        <p>Крупнейший хищник в истории планеты • 15 метров господства</p>
+                    </div>
+                </div>
+                <div class="slider-slide">
+                    <img src="images/Brachio.jpg" alt="Брахиозавр" onerror="this.src='https://images.unsplash.com/photo-1596552183131-5e1284ab7efc?w=1200&h=600&fit=crop'">
+                    <div class="slider-overlay">
+                        <h2>Брахиозавр</h2>
+                        <p>Жираф мезозойской эры • 26 метров величия</p>
+                    </div>
+                </div>
+                <div class="slider-slide">
+                    <img src="images/Triceratops.webp" alt="Трицератопс" onerror="this.src='https://images.unsplash.com/photo-1517960413843-0aee8e2b3285?w=1200&h=600&fit=crop'">
+                    <div class="slider-overlay">
+                        <h2>Трицератопс</h2>
+                        <p>Трехрогий вегетарианец • Бронированный защитник мелового периода</p>
+                    </div>
+                </div>
+                <div class="slider-slide">
+                    <img src="images/Allosaur.jpg" alt="Аллозавр" onerror="this.src='https://images.unsplash.com/photo-1569377464219-7cc26e14e00a?w=1200&h=600&fit=crop'">
+                    <div class="slider-overlay">
+                        <h2>Аллозавр</h2>
+                        <p>Главный охотник юрского периода • 9.7 метра охотничьего мастерства</p>
+                    </div>
+                </div>
+                <div class="slider-slide">
+                    <img src="images/Stego.webp" alt="Стегозавр" onerror="this.src='https://images.unsplash.com/photo-1570481662006-a3a1374699e8?w=1200&h=600&fit=crop'">
+                    <div class="slider-overlay">
+                        <h2>Стегозавр</h2>
+                        <p>Бронированный гигант с крошечным мозгом • Защищён пластинами</p>
+                    </div>
+                </div>
+            </div>
+
+            <button class="slider-btn prev" onclick="changeSlide(-1)" aria-label="Предыдущий слайд">
+                <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+                </svg>
+            </button>
+            <button class="slider-btn next" onclick="changeSlide(1)" aria-label="Следующий слайд">
+                <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                </svg>
+            </button>
+
+            <div class="slider-dots" id="slider-dots">
+                <div class="slider-dot active" onclick="goToSlide(0)"></div>
+                <div class="slider-dot" onclick="goToSlide(1)"></div>
+                <div class="slider-dot" onclick="goToSlide(2)"></div>
+                <div class="slider-dot" onclick="goToSlide(3)"></div>
+                <div class="slider-dot" onclick="goToSlide(4)"></div>
+                <div class="slider-dot" onclick="goToSlide(5)"></div>
+            </div>
+        </div>
+    </div>
 
     <main class="relative z-10 w-full max-w-7xl mx-auto px-4 py-8 flex-grow">
         
@@ -221,11 +448,7 @@
 
             <div class="flex flex-col md:flex-row gap-6">
                 <div class="md:w-1/3 flex flex-col items-center justify-center bg-black/40 rounded-2xl p-4 border border-[#6495ED]/20 relative">
-                    <div id="modal-fossil" class="w-24 h-24 text-[#6495ED] filter drop-shadow-[0_10px_15px_rgba(100,149,237,0.3)] animate-pulse">
-                        <svg viewBox="0 0 24 24" fill="currentColor">
-                            <path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10 10-4.5 10-10S17.5 2 12 2zm1 15.5c0-.8-.7-1.5-1.5-1.5s-1.5.7-1.5 1.5.7 1.5 1.5 1.5 1.5-.7 1.5-1.5zm-1-3.5c-.6 0-1-.4-1-1V9c0-.6.4-1 1-1s1 .4 1 1v4c0 .6-.4 1-1 1z"/>
-                        </svg>
-                    </div>
+                    <img id="modal-fossil-image" class="modal-dino-image w-full h-48 object-cover rounded-xl" src="" alt="Dinosaur">
                     <span id="modal-diet-tag" class="mt-4 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wide"></span>
                 </div>
 
@@ -305,7 +528,8 @@
                 scaleCompare: "с 3-этажный дом",
                 fact: "Царь хищников! Сила его укуса была настолько мощной, что он мог легко раздробить кости крупной добычи, а один его зубик был размером с целый банан.",
                 question: "Какой динозавр обладал силой укуса, способной раздробить кости крупной добычи, и зубами размером с банан?",
-                soundPitch: 0.4
+                soundPitch: 0.4,
+                image: "images/TREX.jpg"
             },
             {
                 id: 'tricera',
@@ -319,7 +543,8 @@
                 scaleCompare: "с тяжелый грузовик",
                 fact: "Трехрогий вегетарианец. Его огромный костяной воротник не только защищал шею от зубов Т-Рекса, но и работал как радиатор, помогая охлаждаться в жару.",
                 question: "У какого динозавра костяной воротник защищал шею от зубов хищников и выполнял роль теплового радиатора?",
-                soundPitch: 0.7
+                soundPitch: 0.7,
+                image: "images/Triceratops.webp"
             },
             {
                 id: 'ptero',
@@ -333,7 +558,8 @@
                 scaleCompare: "с крупного орла",
                 fact: "Летающий щеголь мезозоя. На самом деле это птерозавр (летающая рептилия), а не динозавр. Младшие виды были размером с воробья, а старшие — с хороший планер.",
                 question: "Какая летающая рептилия мезозоя ошибочно принимается за динозавра, а ее крупные виды сопоставимы по размеру с планером?",
-                soundPitch: 1.5
+                soundPitch: 1.5,
+                image: "images/Pter.jpg"
             },
             {
                 id: 'brachio',
@@ -347,7 +573,8 @@
                 scaleCompare: "с 5-этажный дом",
                 fact: "Жираф мезозоя весом с десяток слонов! Его шея была настолько длинной, что этот гигант мог бы без труда заглянуть в окно 4-го этажа современной многоэтажки.",
                 question: "Какой травоядный ящер весил как десяток слонов и обладал шеей, способной дотянуться до четвертого этажа?",
-                soundPitch: 0.3
+                soundPitch: 0.3,
+                image: "images/Brachio.jpg"
             },
             {
                 id: 'raptor',
@@ -361,7 +588,8 @@
                 scaleCompare: "с крупную индейку",
                 fact: "Мал, да удал! В жизни они были размером с крупную индейку и покрыты перьями (совсем не как в кино), но охотились невероятно хитрыми и быстрыми стаями.",
                 question: "Какой небольшой хищник юрского и мелового периодов был покрыт перьями и охотился быстрыми, хитрыми стаями?",
-                soundPitch: 1.8
+                soundPitch: 1.8,
+                image: "images/Raptor.jpg"
             },
             {
                 id: 'stego',
@@ -375,7 +603,8 @@
                 scaleCompare: "с городской автобус",
                 fact: "Обладатель грозных шипов на хвосте и огромных пластин на спине. При этом мозг этого бедняги весил всего 70 грамм и был размером с обычный грецкий орех.",
                 question: "У какого защищенного пластинами динозавра мозг весил всего 70 граммов и был размером с грецкий орех?",
-                soundPitch: 0.6
+                soundPitch: 0.6,
+                image: "images/Stego.webp"
             },
             {
                 id: 'ankylo',
@@ -389,7 +618,8 @@
                 scaleCompare: "со средний танк",
                 fact: "Живой доисторический танк. Его спину покрывала непробиваемая костяная броня, а на хвосте красовалась тяжеленная булава, которой он лихо ломал ноги нападавшим хищникам.",
                 question: "Какой защищенный броней ящер использовал тяжелую костяную булаву на хвосте для борьбы с хищниками?",
-                soundPitch: 0.5
+                soundPitch: 0.5,
+                image: "images/Ankylo.jpg"
             },
             {
                 id: 'spino',
@@ -403,7 +633,8 @@
                 scaleCompare: "с большой яхтой",
                 fact: "Крупнейший хищник в истории планеты! Он превосходил размерами даже знаменитого Т-Рекса, потрясающе плавал и охотился на гигантских рыб благодаря вытянутой челюсти и огромному костяному «парусу» на спине.",
                 question: "Какой гигантский хищник превосходил по длине Т-Рекса, умел плавать и обладал большим кожистым «парусом» на спине?",
-                soundPitch: 0.35
+                soundPitch: 0.35,
+                image: "images/Spino.jpg"
             },
             {
                 id: 'diplo',
@@ -417,7 +648,8 @@
                 scaleCompare: "с пассажирский вагон",
                 fact: "Обладатель невероятно длинного и тонкого хвоста. Ученые считают, что этот гигант мог использовать кончик хвоста как кнут, щелкая им со скоростью звука для отпугивания хищников.",
                 question: "Какой длиннохвостый гигант мог щелкать кончиком своего хвоста со скоростью звука для защиты от врагов?",
-                soundPitch: 0.4
+                soundPitch: 0.4,
+                image: "images/Diplo.png"
             },
             {
                 id: 'parasaur',
@@ -431,7 +663,8 @@
                 scaleCompare: "со свадебный лимузин",
                 fact: "Самый музыкальный динозавр. Его длинный загнутый гребень на голове работал как духовая труба. Прогоняя сквозь него воздух, он мог издавать мощный рев для общения со своей стаей.",
                 question: "У какого динозавра длинный загнутый гребень на голове работал по принципу музыкальной трубы для подачи сигналов?",
-                soundPitch: 0.8
+                soundPitch: 0.8,
+                image: "images/Parasaur.jpg"
             },
             {
                 id: 'dilopho',
@@ -445,7 +678,8 @@
                 scaleCompare: "со спортивный внедорожник",
                 fact: "Быстрый хищник с двумя округлыми гребнями на голове. Вопреки фильмам, он не умел плеваться ядом и не раскрывал воротник, зато бегал с огромной скоростью и ловко выслеживал добычу.",
                 question: "У какого хищника с двумя округлыми гребнями на голове в реальности отсутствовала способность плеваться ядом?",
-                soundPitch: 1.1
+                soundPitch: 1.1,
+                image: "images/Dilopho.webp"
             },
             {
                 id: 'allosaur',
@@ -459,12 +693,40 @@
                 scaleCompare: "со школьный автобус",
                 fact: "Главный охотник юрского периода. Его челюсти работали как топор: он широко раскрывал пасть и наносил удары сверху вниз. Действовал сообща и мог одолеть даже огромных диплодоков.",
                 question: "Какой хищник юрского периода охотился группами и наносил удары верхней челюстью сверху вниз, словно топором?",
-                soundPitch: 0.45
+                soundPitch: 0.45,
+                image: "images/Allosaur.jpg"
             }
         ];
 
         let activeTab = 'atlas';
         let currentSelectedDino = null;
+        let currentSlide = 0;
+        const totalSlides = 6;
+
+        function changeSlide(direction) {
+            currentSlide = (currentSlide + direction + totalSlides) % totalSlides;
+            updateSlider();
+        }
+
+        function goToSlide(index) {
+            currentSlide = index;
+            updateSlider();
+        }
+
+        function updateSlider() {
+            const track = document.getElementById('slider-track');
+            const dots = document.querySelectorAll('.slider-dot');
+            
+            track.style.transform = `translateX(-${currentSlide * 100}%)`;
+            
+            dots.forEach((dot, index) => {
+                if (index === currentSlide) {
+                    dot.classList.add('active');
+                } else {
+                    dot.classList.remove('active');
+                }
+            });
+        }
 
         function switchTab(tabId) {
             activeTab = tabId;
@@ -503,12 +765,8 @@
                 const cardHtml = `
                     <div class="group relative bg-slate-900/20 border border-[#6495ED]/20 hover:border-[#6495ED] rounded-3xl p-5 custom-blur transition-all duration-300 hover:-translate-y-2 hover:shadow-[0_10px_30px_rgba(100,149,237,0.15)] flex flex-col justify-between cursor-pointer" onclick="openModal('${dino.id}')">
                         <div>
-                            <div class="w-full h-32 bg-black/40 rounded-2xl flex items-center justify-center relative overflow-hidden mb-4 group-hover:scale-105 transition-all duration-300">
-                                <div class="w-16 h-16 text-[#6495ED] opacity-80 group-hover:rotate-12 transition-transform duration-300">
-                                    <svg viewBox="0 0 24 24" fill="currentColor">
-                                        <path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10 10-4.5 10-10S17.5 2 12 2zm1 15.5c0-.8-.7-1.5-1.5-1.5s-1.5.7-1.5 1.5.7 1.5 1.5 1.5 1.5-.7 1.5-1.5zm-1-3.5c-.6 0-1-.4-1-1V9c0-.6.4-1 1-1s1 .4 1 1v4c0 .6-.4 1-1 1z"/>
-                                    </svg>
-                                </div>
+                            <div class="w-full h-48 bg-black/40 rounded-2xl flex items-center justify-center relative overflow-hidden mb-4 group-hover:scale-105 transition-all duration-300">
+                                <img src="${dino.image}" alt="${dino.name}" class="dino-card-image w-full h-full object-cover rounded-2xl" onerror="this.src='https://images.unsplash.com/photo-1518173946687-a1e4e3e6a0ef?w=400&h=300&fit=crop'">
                                 <span class="absolute top-2 right-2 text-[10px] uppercase font-bold text-gray-400/80 bg-black/60 px-2 py-0.5 rounded-full border border-[#6495ED]/20">${dino.period}</span>
                             </div>
 
@@ -566,6 +824,7 @@
             document.getElementById('modal-speed').textContent = dino.speed;
             document.getElementById('modal-danger').textContent = `${dino.danger}`;
             document.getElementById('modal-scale-compare').textContent = dino.scaleCompare;
+            document.getElementById('modal-fossil-image').src = dino.image;
 
             const dietTag = document.getElementById('modal-diet-tag');
             dietTag.textContent = dino.diet;
@@ -744,10 +1003,8 @@
             return `
                 <div class="space-y-4 pt-4 border-t border-slate-950">
                     <div class="flex items-center space-x-4">
-                        <div class="w-16 h-16 text-[#6495ED]">
-                            <svg viewBox="0 0 24 24" fill="currentColor">
-                                <path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10 10-4.5 10-10S17.5 2 12 2zm1 15.5c0-.8-.7-1.5-1.5-1.5s-1.5.7-1.5 1.5.7 1.5 1.5 1.5 1.5-.7 1.5-1.5zm-1-3.5c-.6 0-1-.4-1-1V9c0-.6.4-1 1-1s1 .4 1 1v4c0 .6-.4 1-1 1z"/>
-                            </svg>
+                        <div class="w-24 h-24 flex-shrink-0">
+                            <img src="${dino.image}" alt="${dino.name}" class="w-full h-full object-cover rounded-xl border-2 border-[#6495ED]/30" onerror="this.src='https://images.unsplash.com/photo-1518173946687-a1e4e3e6a0ef?w=200&h=200&fit=crop'">
                         </div>
                         <div>
                             <h4 class="text-xl font-bold text-white">${dino.name}</h4>
@@ -976,6 +1233,10 @@
             for (let i = 0; i < 15; i++) {
                 setTimeout(createLeaf, Math.random() * 4000);
             }
+
+            setInterval(() => {
+                changeSlide(1);
+            }, 5000);
         });
     </script>
 </body>
